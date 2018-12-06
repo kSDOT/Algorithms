@@ -2,8 +2,7 @@
 
 
 namespace myAlgorithms{
-	FloydPathFind::FloydPathFind(const std::vector<std::reference_wrapper<myAlgorithms::Node>>& vec) : graphSize{vec.size()}, 
-		distanceOffset { 0 } {
+	FloydPathFind::FloydPathFind(const std::vector<std::reference_wrapper<myAlgorithms::Node>>& vec) : graphSize{vec.size()} {
 		
 		mNodeToNodeDistance.resize(graphSize);//create 2d array and make the distances in main diagonal 0
 		mIntToNode.reserve(graphSize);
@@ -50,26 +49,24 @@ namespace myAlgorithms{
 		std::stack<std::reference_wrapper<Node>> path;
 
 		for (Node* currentNode = &destination.get();
-		currentNode != &origin.get();
-		){ 
+		currentNode != &originIt->first.get();
+		currentNode = mNodeToNodeDistance[mNodeToInt.find(std::ref(*currentNode))->second][originIt->second].second)
 			path.push(*currentNode);
-			auto temp = mNodeToInt.find(std::ref(*currentNode))->second;
-			currentNode = mNodeToNodeDistance[originIt->second][temp].second;
-}
+	
 		path.push(origin);
 
-		return { path, mNodeToInt.find(destination)->second };
+		return { path, mNodeToNodeDistance[originIt->second][destinationIt->second].first };
 	}
 
 	void FloydPathFind::findDistances(){
-		for (size_t k{ 0 }; k < graphSize; ++k)
+		for (size_t k{ 0 }; k < graphSize; ++k){
 			for (size_t i{ 0 }; i < graphSize; ++i)
 				for (size_t j{ 0 }; j < graphSize; ++j)
 					if (mNodeToNodeDistance[i][j].first > mNodeToNodeDistance[i][k].first + mNodeToNodeDistance[k][j].first){
 						mNodeToNodeDistance[i][j].first = mNodeToNodeDistance[i][k].first + mNodeToNodeDistance[k][j].first;
 						mNodeToNodeDistance[i][j].second = &mIntToNode[k].get();
-
 					}
+		}
 	}
 
 }
