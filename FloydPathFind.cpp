@@ -10,7 +10,7 @@ namespace myAlgorithms{
 		for (size_t i{0}; i < graphSize; ++i){
 			mNodeToNodeDistance[i].resize(graphSize);
 			
-			mIntToNode.push_back(vec[i]);
+			mIntToNode.emplace_back(vec[i]);
 			mNodeToInt.emplace(std::make_pair(vec[i], i));
 
 			//find distance from this node to others
@@ -21,7 +21,7 @@ namespace myAlgorithms{
 
 					std::vector<std::pair<std::reference_wrapper<Node>, int>>& neighbours = vec[i].get().otherNodes;	
 					
-					for (int k{0}; k < neighbours.size(); ++k){
+					for (size_t k{0}; k < neighbours.size(); ++k){
 						if (neighbours[k].first == vec[j]){
 							distance = neighbours[k].second;
 							previous = &neighbours[k].first.get();
@@ -30,7 +30,7 @@ namespace myAlgorithms{
 					}	
 					mNodeToNodeDistance[i][j] = std::make_pair( distance, previous );
 				}	
-				mNodeToNodeDistance[i][i] = std::make_pair( 0, &vec[i].get() );
+				mNodeToNodeDistance[i][i] = std::make_pair( 0, nullptr );
 			}			
 		}
 
@@ -49,11 +49,9 @@ namespace myAlgorithms{
 		std::stack<std::reference_wrapper<Node>> path;
 
 		for (Node* currentNode = &destination.get();
-		currentNode != &originIt->first.get();
+		currentNode != nullptr;
 		currentNode = mNodeToNodeDistance[mNodeToInt.find(std::ref(*currentNode))->second][originIt->second].second)
 			path.push(*currentNode);
-	
-		path.push(origin);
 
 		return { path, mNodeToNodeDistance[originIt->second][destinationIt->second].first };
 	}
